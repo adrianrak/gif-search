@@ -14,13 +14,14 @@ App = React.createClass({
         this.setState({
           loading: true  // 2.
         });
-        this.getGif(searchingText, function(gif) {  // 3.
-          this.setState({  // 4
-            loading: false,  // a
-            gif: gif,  // b
-            searchingText: searchingText  // c
-          });
-        }.bind(this));
+        this.getGif(searchingText)
+            .then((gif) => {  // 3.
+                this.setState({  // 4
+                loading: false,  // a
+                gif: gif,  // b
+                 searchingText: searchingText  // c
+                });
+            }).bind(this);
     },
 
     getGif: function(searchingText) {
@@ -44,7 +45,7 @@ App = React.createClass({
                 xhr.send();
         });
     },
-
+    
     render: function() {
 
         let styles = {
