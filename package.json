@@ -13,6 +13,7 @@
   "author": "Adrian Rak",
   "license": "ISC",
   "devDependencies": {
+    "babel-polyfill": "^6.26.0",
     "http-server": "^0.10.0"
   }
 }
