@@ -1,5 +1,5 @@
-var GIPHY_API_URL = 'http://api.giphy.com';
-var GIPHY_PUB_KEY = 'a1w4GjFRp4p16YJ0jF8iCTo75SMqCoBG';
+let GIPHY_API_URL = 'http://api.giphy.com';
+let GIPHY_PUB_KEY = 'a1w4GjFRp4p16YJ0jF8iCTo75SMqCoBG';
 
 App = React.createClass({
     getInitialState() {
@@ -14,35 +14,43 @@ App = React.createClass({
         this.setState({
           loading: true  // 2.
         });
-        this.getGif(searchingText, function(gif) {  // 3.
-          this.setState({  // 4
-            loading: false,  // a
-            gif: gif,  // b
-            searchingText: searchingText  // c
-          });
-        }.bind(this));
+        this.getGif(searchingText)
+            .then((gif) => {  // 3.
+                this.setState({  // 4
+                loading: false,  // a
+                gif: gif,  // b
+                 searchingText: searchingText  // c
+                });
+            })//.bind(this);
     },
 
-    getGif: function(searchingText, callback) {  // 1.
-        var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;  // 2.
-        var xhr = new XMLHttpRequest();  // 3.
-        xhr.open('GET', url);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-               var data = JSON.parse(xhr.responseText).data; // 4.
-                var gif = {  // 5.
-                    url: data.fixed_width_downsampled_url,
-                    sourceUrl: data.url
-                };
-                callback(gif);  // 6.
-            }
-        };
-        xhr.send();
+    getGif: function(searchingText) {
+        return new Promise(
+            function (resolve, reject) {
+                let url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;  // 2.
+                //const xhr = new XMLHttpRequest();  // 3.
+                //xhr.open('GET', url);
+                //xhr.onload = function() {
+                fetch(url).then(function(response) {  
+                    return response.json();
+                    if (response.status === 200) {
+                        //const data = JSON.parse(xhr.responseText).data; // 4.
+                        const gif = {  // 5.
+                            url: response.data.fixed_width_downsampled_url,
+                            sourceUrl: response.data.url
+                            };
+                        resolve(gif);  // 6.
+                    } else {
+                        reject(new Error(response.statusText));
+                    }
+                });
+                //xhr.send();
+        });
     },
-
+    
     render: function() {
 
-        var styles = {
+        let styles = {
             margin: '0 auto',
             textAlign: 'center',
             width: '90%'
@@ -63,5 +71,5 @@ App = React.createClass({
     }
 });
 
-var app = React.createElement(App, {});
+const app = React.createElement(App, {});
 ReactDOM.render(app, document.getElementById('app'));
